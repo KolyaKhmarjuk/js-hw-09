@@ -11,9 +11,9 @@ refs.form.addEventListener('submit', iterationCreatePromise);
 
 function iterationCreatePromise(event) {
   event.preventDefault();
-  delayInputValue = Number(refs.delayInput.value);
-  stepInputValue = Number(refs.stepInput.value);
-  createPositionNumber = 0;
+  let delayInputValue = Number(refs.delayInput.value);
+  let stepInputValue = Number(refs.stepInput.value);
+  let createPositionNumber = 0;
 
   for (let i = 0; i < refs.amountInput.value; i += 1){
     createPromise(createPositionNumber += 1, delayInputValue + stepInputValue * i)
