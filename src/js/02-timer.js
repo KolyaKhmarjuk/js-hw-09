@@ -1,11 +1,7 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-require("flatpickr/dist/themes/dark.css");
-
-
-
-
+require('flatpickr/dist/themes/dark.css');
 
 const startBtn = document.querySelector('[data-start]');
 const daysRef = document.querySelector('[data-days]');
@@ -32,61 +28,47 @@ function convertMs(ms) {
 
 const addLeadingZero = event => String(event).padStart(2, 0);
 
+const showTimer = selectedData => {
+  const nowDateTime = new Date();
+  const selectData = new Date(selectedData);
+
+  if (!selectData) return;
+
+  const timeDifference = selectData - nowDateTime;
+  const { days, hours, minutes, seconds } = convertMs(timeDifference);
+  daysRef.textContent = days;
+  hoursRef.textContent = addLeadingZero(hours);
+  minutesRef.textContent = addLeadingZero(minutes);
+  secondsRef.textContent = addLeadingZero(seconds);
+
+  if (startBtn.attributes !== 'disabled') {
+    startBtn.style.backgroundColor = 'green';
+  }
+};
+
+const onClosedDatePicker = selectedDates => {
+  const selectedData = selectedDates[0];
+  if (selectedData < new Date()) {
+    Notify.failure('Please choose a date in the future');
+    return;
+  }
+  startBtn.removeAttribute('disabled');
+
+  const onClick = () => {
+    if (timer) {
+      clearInterval(timer);
+    }
+    timer = setInterval(() => showTimer(selectedData), 1000);
+  };
+  startBtn.addEventListener('click', onClick);
+};
+
 const options = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
-    if (selectedDates[0] < new Date()) {
-      Notify.failure('Please choose a date in the future');
-      return;
-    }
-    startBtn.removeAttribute('disabled');
-
-    const showTimer = () => {
-      const nowDateTime = new Date();
-      localStorage.setItem('selectedData', selectedDates[0]);
-      const selectData = new Date(localStorage.getItem('selectedData'));
-
-      if(!selectData) return;
-
-      const timeDifference = selectData - nowDateTime;
-      const {days, hours, minutes, seconds} = convertMs(timeDifference);
-      daysRef.textContent = days;
-      hoursRef.textContent = addLeadingZero(hours);
-      minutesRef.textContent = addLeadingZero(minutes);
-      secondsRef.textContent = addLeadingZero(seconds);
-
-      if (startBtn.attributes !== 'disabled') {
-        startBtn.style.backgroundColor = 'green';
-      }
-    }
-
-    const onClick = () => {
-      if(timer) {
-        clearInterval(timer);
-      }
-      showTimer();
-      timer = setInterval(showTimer, 1000);
-    };
-
-    startBtn.addEventListener('click', onClick);
-  },
+  onClose: onClosedDatePicker,
 };
 
-
-
-flatpickr('#datetime-picker', {...options});
-
-  
-
-
-
-
-
-
-
-
-
-
+flatpickr('#datetime-picker', { ...options });

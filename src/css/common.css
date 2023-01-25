@@ -35,7 +35,7 @@ img {
 
 .btn{
   padding: 1px 20px;
-  background-color: rgb(255, 0, 0);
+  background-color: gray;
   color: white;
   border-radius: 2px;
 }
